@@ -1,0 +1,6 @@
+venv/
+data/
+docs/
+test/
+docker-compose.yml
+.git/

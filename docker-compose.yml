@@ -1,0 +1,78 @@
+version: '3.2'
+
+services:
+  essim:
+    image: ci.tno.nl/essim/open-sourced-essim/essim-engine:latest
+    ports:
+     - 8112:8112
+    environment:
+     - HTTP_SERVER_SCHEME=http
+     - HTTP_SERVER_HOSTNAME=0.0.0.0
+     - HTTP_SERVER_PORT=8112
+     - HTTP_SERVER_PATH=essim
+     - MONGODB_HOST=mongo
+     - MONGODB_PORT=27017
+     - GRAFANA_ADMIN_USER=admin
+     - GRAFANA_ADMIN_PASSWORD=admin
+     - GRAFANA_INTERNAL_URL=http://grafana:3000
+     - GRAFANA_EXTERNAL_URL=http://localhost:3000
+     - CONSOLE_LOG_LEVEL=debug
+     - EMISSION_MANAGER_ENABLE=false
+     - FILE_LOG_LEVEL=debug
+     - LOG_FILE_LOCATION=logs
+     - LOG_FILES_SIZE_CAP=2GB
+     - MAX_LOG_FILE_SIZE=10MB
+     - MAX_LOG_HISTORY_DAYS=60
+     - PROFILE_QUERY_TIMEOUT=120
+    depends_on:
+     - mongo
+     - influxdb
+    networks:
+     - essim_net
+
+  mqtt:
+    image: eclipse-mosquitto:1.6
+    ports:
+     - 0.0.0.0:1883:1883/tcp
+    networks:
+     - essim_net        
+
+  mongo:
+    image: mvertes/alpine-mongo
+    ports:
+      - 0.0.0.0:27017:27017
+    volumes:
+      - mongo-storage:/data/db
+    networks:
+     - essim_net
+
+  influxdb:
+    image: influxdb:1.7
+    ports:
+      - 8086:8086
+      - 8998:8088
+    volumes:
+      - influxdb-storage:/var/lib/influxdb
+    networks:
+     - essim_net
+
+  grafana:
+    image: grafana/grafana:8.3.2
+    ports:
+      - 3000:3000
+    environment:
+      - GF_PANELS_DISABLE_SANITIZE_HTML=true
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    networks:
+     - essim_net
+
+volumes:
+  grafana-storage:
+  influxdb-storage:
+  mongo-storage:
+
+networks:
+  essim_net:

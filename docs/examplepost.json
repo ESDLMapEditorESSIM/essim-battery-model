@@ -1,0 +1,46 @@
+{
+  "user": "essim",
+  "scenarioID": "5_pvbatt",
+  "simulationDescription": "5-pv_3400kWh_batt_6kWh_2kW_tcw11h14h",
+  "startDate": "2019-01-01T00:00:00+0100",
+  "endDate": "2019-01-31T23:00:00+0100",
+  "influxURL": "http://influxdb:8086",
+  "grafanaURL": "http://grafana:3000",
+  "nodeConfig": [
+    {
+      "esdlNodeId": "BATT1",
+      "config": {
+        "influxUrl": "http://localhost:8086",
+        "scenarioID": "5_pvbatt",
+        "startDate": "2019-01-01T00:00:00+0100",
+        "endDate": "2019-01-31T23:00:00+0100",
+        "chargeTimeWindows": {
+          "always_charge_below_fill_fraction": "0.25",
+          "windows": [
+            {
+              "start_hour": "12",
+              "end_hour": "24"
+            }
+          ]
+        },
+        "dischargeTimeWindows": {
+          "always_discharge_above_fill_fraction": "0.75",
+          "windows": [
+            {
+              "start_hour": "7",
+              "end_hour": "10"
+            },
+            {
+              "start_hour": "18",
+              "end_hour": "23"
+            }
+          ]
+        }
+      },
+      "mqttHost": "mqtt",
+      "mqttPort": 1883,
+      "mqttTopic": "essim"
+    }
+  ],
+  "esdlContents": "<<ESDL>>"
+}
