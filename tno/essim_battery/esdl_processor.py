@@ -27,7 +27,7 @@ influx_cred = os.getenv('INFLUXDB_CREDENTIALS')
 influx_cred_map = {}
 if influx_cred is not None:
     for host_cred_combo in influx_cred.split(','):
-        match = re.search('(.*:\/\/)*(\w+):(\w+)@([A-Za-z0-9\-\.]+)(:(\d+))*', host_cred_combo.strip())
+        match = re.search(r'(.*:\/\/)*(\w+):(\w+)@([A-Za-z0-9\-\.]+)(:(\d+))*', host_cred_combo.strip())
         if len(match.groups()) != 6:
             logger.warning('Invalid credential combination specified: {}. Ignoring', host_cred_combo)
             continue

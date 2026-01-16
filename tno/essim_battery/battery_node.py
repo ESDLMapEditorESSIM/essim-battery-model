@@ -142,6 +142,7 @@ class BatteryNode:
             bid_curve[1][1] = -self.delta   # is both are 0, change the latter to -delta to keep strictly decreasing
 
         # Bidcurve is needed when allocation is received. For now, save all created bidcurves
+        logger.info(f"Time step={step_nr}: bidcurve {bid_curve}")
         self.store_bid_curve(carrier_id, bid_curve)
         return bid_curve
 
@@ -183,6 +184,7 @@ class BatteryNode:
         logger.debug(
             f"Allocation/duration ({self.carriers_info[carrier_id]['carrier_type']}): {allocation / self.duration}")
 
+        logger.info(f"Time step={step_nr}: allocation {allocation}, new_soc {new_soc}")
         self.store_allocation_energy(carrier_id, allocation)
         return allocation
 
