@@ -38,12 +38,12 @@
   },
   "loggers": {
     "tno": {
-      "level": "DEBUG",
+      "level": "INFO",
       "propagate": "no"
     }
   },
   "root": {
-    "level": "DEBUG",
+    "level": "INFO",
     "handlers": ["console", "debug_file_handler", "error_file_handler"]
   }
 }
