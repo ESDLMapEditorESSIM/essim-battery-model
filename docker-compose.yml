@@ -21,6 +21,7 @@ services:
      - FILE_LOG_LEVEL=info
      - LOG_FILE_LOCATION=logs
      - LOG_FILES_SIZE_CAP=2GB
+     - LOG4P_JSON_LOCATION=./tno/shared/log4p.json
      - MAX_LOG_FILE_SIZE=10MB
      - MAX_LOG_HISTORY_DAYS=60
      - PROFILE_QUERY_TIMEOUT=120
