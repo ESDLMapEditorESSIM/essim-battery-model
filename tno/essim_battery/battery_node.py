@@ -26,7 +26,7 @@ class BatteryNode:
         self.carriers_info = carriers_info
         self.simulation_info = simulation_info
 
-        self.delta = 1e-12
+        self.delta = 1e-6
 
         self.state_of_charge_in_joules = list()
         self.bid_curves = dict()
@@ -131,15 +131,32 @@ class BatteryNode:
         # logger.debug(f"energy={e}, power={power}")
 
         # Bidcurves must be strictly decreasing
-        mdc_energy = -self.delta / 2 if self.delta / 2 < max_discharge_this_timestep else -max_discharge_this_timestep / 2
-        mcc_energy = self.delta / 2 if self.delta / 2 < max_charge_this_timestep else max_charge_this_timestep / 2
-        bid_curve = [[minprice, max_charge_this_timestep], [mcc, mcc_energy], [mdc, mdc_energy], [maxprice, -max_discharge_this_timestep]]
-        if max_discharge_this_timestep == 0:
-            bid_curve.pop(2)    # remove the [mdc, ...] element if there is no discharging allowed at this timestep
-        if max_charge_this_timestep == 0:
-            bid_curve.pop(1)    # remove the [mcc, ...] element if there is no charging allowed at this timestep
+        if max_charge_this_timestep - self.delta < self.delta:
+            mcc_energy = (max_charge_this_timestep - self.delta) / 2
+        else:
+            mcc_energy = self.delta
+
+        if max_discharge_this_timestep - self.delta < self.delta:
+            mdc_energy = (max_discharge_this_timestep - self.delta) / 2
+        else:
+            mdc_energy = self.delta
+
+        bid_curve = [
+            [minprice, max_charge_this_timestep],
+            [mcc - self.delta, max_charge_this_timestep - self.delta],
+            [mcc, mcc_energy],
+            [mdc, -mdc_energy],
+            [mdc + self.delta, -(max_discharge_this_timestep - self.delta)],
+            [maxprice, -max_discharge_this_timestep]
+        ]
+        if max_discharge_this_timestep <= self.delta:
+            bid_curve.pop(4)    # remove the [mdc, ...] element if there is no discharging allowed at this timestep
+            bid_curve.pop(3)
+        if max_charge_this_timestep <= self.delta:
+            bid_curve.pop(2)    # remove the [mcc, ...] element if there is no charging allowed at this timestep
+            bid_curve.pop(1)
         if len(bid_curve) == 2:
-            bid_curve[1][1] = -self.delta   # is both are 0, change the latter to -delta to keep strictly decreasing
+            bid_curve[1][1] = -self.delta   # is both are 0 (or very small), change the latter to -delta to keep strictly decreasing
 
         # Bidcurve is needed when allocation is received. For now, save all created bidcurves
         logger.info(f"Time step={step_nr}: bidcurve {bid_curve}")

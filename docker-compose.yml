@@ -25,6 +25,7 @@ services:
      - MAX_LOG_FILE_SIZE=10MB
      - MAX_LOG_HISTORY_DAYS=60
      - PROFILE_QUERY_TIMEOUT=120
+     - STORE_BIDCURVES=1
     depends_on:
      - mongo
      - influxdb
